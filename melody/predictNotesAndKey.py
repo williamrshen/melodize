@@ -7,6 +7,7 @@ import librosa.display
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+import time
 
 
 # --- Model Class Index Mapping (same order as model was trained on)
@@ -15,6 +16,10 @@ index_to_label = {
     6: 'D#4', 7: 'D4', 8: 'E4', 9: 'F#4', 10: 'F4', 11: 'G#4', 12: 'G4'
 }
 note_labels = [index_to_label[i] for i in range(len(index_to_label))]
+
+
+overall_avgs = []
+
 
 def predict_chunks(folder_path, model_path="oneNote/note_model.h5", sr=22050):
     model = load_model(model_path)
@@ -25,8 +30,11 @@ def predict_chunks(folder_path, model_path="oneNote/note_model.h5", sr=22050):
     ])
 
     predictions = []
+    total_time = 0
 
     for chunk_file in chunk_files:
+        start_time = time.time()
+
         full_path = os.path.join(folder_path, chunk_file)
         audio, _ = sf.read(full_path)
 
@@ -52,11 +60,18 @@ def predict_chunks(folder_path, model_path="oneNote/note_model.h5", sr=22050):
         img_array = np.expand_dims(img_array, axis=0)
 
         # Predict
-        pred = model.predict(img_array)
+        pred = model.predict(img_array, verbose=0)
         note_index = note_labels[np.argmax(pred)]
         predictions.append(note_index)
 
+        total_time += time.time() - start_time
+
+    avg_time = total_time / len(chunk_files) if chunk_files else 0
+    print(f"Average time per note: {avg_time:.4f} seconds")
+    overall_avgs.append(avg_time)
+
     return predictions
+
 
 
 def get_note_name(note):
@@ -112,3 +127,4 @@ for song_folder in os.listdir("melody/songs"):
     with open(f"melody/predictions/{song_folder}/predictions.txt", "w") as f:
         f.write(f"{predicted_key}\n{' '.join(note[:-1] for note in note_predictions)}\n")
 
+print(sum(overall_avgs) / len(overall_avgs))

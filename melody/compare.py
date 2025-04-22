@@ -9,7 +9,7 @@ total_keys = 0
 total_notes = 0
 correct_notes = 0
 
-for i in range(11):  # from 0 to 10
+for i in range(50):  # from 0 to 10
     metadata_path = os.path.join(metadata_dir, f"song_{i}", "metadata.txt")
     prediction_path = os.path.join(predictions_dir, f"song_{i}", "predictions.txt")
 

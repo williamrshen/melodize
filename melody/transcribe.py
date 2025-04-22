@@ -39,6 +39,7 @@ def stretch_audio(input_path, output_path, target_duration=1.0):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     sf.write(output_path, y_stretched, sr)
 
+os.makedirs("melody/predictions", exist_ok=True)
 
 for song_folder in os.listdir("melody/songs"):
     with open(f"melody/songs/{song_folder}/metadata.txt", "r") as f:
