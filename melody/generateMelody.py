@@ -49,7 +49,7 @@ def generate_pleasant_melody(notes_in_key, tonic, length=12):
     return melody
 
 # --- Melody Settings ---
-songs = 50
+songs = 100
 shortest = 20
 longest = 40
 sr = 22050
